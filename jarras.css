@@ -1,0 +1,25 @@
+body {
+  font-family: Arial;
+}
+
+.container {
+  width: 1000px;
+  margin: 0 auto;
+}
+
+.svg-jarra {
+  height: 250px;
+  min-height: 250px;
+  width: 200px;
+  padding: 0;
+  float: left;
+  margin-right: 1em;
+}
+
+#log {
+  width: 400px;
+  font-size: 90%;
+  float: left;
+  max-height: 250px;
+  overflow-y: auto;
+}
