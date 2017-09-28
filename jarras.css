@@ -29,3 +29,27 @@ body {
   max-height: 250px;
   overflow-y: auto;
 }
+
+#controls {
+  margin-top: 2em;
+  border: 1px solid #ddd;
+  background: #fafafa;
+  padding: 1em;
+}
+
+#controls td {
+  padding-right: 2em;
+}
+
+input {
+  border: 1px solid #ddd;
+  padding: 0.5em;
+}
+
+button {
+  border: 1px solid #b71c1c;
+  background: #f44336;
+  padding: 1em;
+  color: #fff;
+  text-transform: uppercase;
+}

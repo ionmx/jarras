@@ -2,6 +2,7 @@ var MAX_A      = 3;
 var MAX_B      = 5;
 var search_key = 'b';
 var search_val = 4;
+var initial_state = '0-0';
 
 var states     = {};
 var discovered = {};
@@ -150,7 +151,7 @@ function initialize_jarras() {
   mango1.setAttribute('y', jarra_max_height - jarra_height + 20);
   mango2.setAttribute('height',  jarra_height * 0.6 - 20);
   mango2.setAttribute('y', jarra_max_height - jarra_height + 30); 
-
+  document.getElementById('log').innerHTML =''; 
   update_log('Inicializar jarras: A es de ' + MAX_A +' litros y B es de ' + MAX_B + ' litros');
 }
 
@@ -175,16 +176,24 @@ function show_step(steps) {
   	update_jarras(s[1], s[3]);
   	setTimeout(function() {
       show_step(steps);
-    }, 1000);	
+    }, 500);	
   } else {
   	update_log('¡Encontrado!');
   }
 }
 
-create_state(0, 0);
-initialize_jarras();
-dfs('0-0', '');
-update_log ('Buscando ' + search_val + ' en jarra ' + search_key);
-show_solution();
+function play() {
+  MAX_A = document.getElementById('A').value;
+  MAX_B = document.getElementById('B').value;
+  var sk = document.getElementById("search_key");
+  search_key = sk.options[sk.selectedIndex].value;
+  search_val = document.getElementById('search_val').value;
+
+  initialize_jarras();
+  create_state(0, 0);
+  dfs(initial_state, '');
+  update_log ('Buscando ' + search_val + ' en jarra ' + search_key);
+  show_solution();
+}
 
 

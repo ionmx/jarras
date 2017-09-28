@@ -23,8 +23,16 @@
 <div id="log">
 </div>
 <div class="clearfix"></div>
-<div class="controls">
-ALGO
+<div id="controls">
+<table>
+  <tr>
+    <td>Capacidad A:<br><input type="text" id="A" value="3"></td>
+    <td>Capacidad B:<br><input type="text" id="B" value="5"></td>
+    <td>Buscar:<br><select id="search_key"><option value="a">a</option><option value="b" selected="selected">b</option></select><input type="text" id="search_val" value="4"></td>
+
+    <td><button type="button" id="play" onclick="play();">Iniciar</button></td>
+   </tr>
+</table>
 </div>
 <script src="jarras.js"></script>
 </body>
