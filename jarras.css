@@ -2,6 +2,12 @@ body {
   font-family: Arial;
 }
 
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
 .container {
   width: 1000px;
   margin: 0 auto;

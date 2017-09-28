@@ -7,15 +7,15 @@ var states     = {};
 var discovered = {};
 var found      = false;
 
-
 var jarra_max_height = 250;
 var liter_height = 0;
 
-function assign_state(key, na, nb) {
+function assign_state(key, na, nb, msg) {
   new_key = na + '-' + nb;
   states[key][new_key] = {};
   states[key][new_key]['a'] = na;
   states[key][new_key]['b'] = nb;
+  states[key][new_key]['msg'] = msg;
   create_state(na, nb);
 }
 
@@ -35,12 +35,12 @@ function create_state(a, b) {
   if (a < MAX_A) {
     na = MAX_A; 
     nb = b;
-    assign_state(key, na, nb);
+    assign_state(key, na, nb, 'Llenar jarra A');
   }
   if (b < MAX_B) {
     na = a; 
     nb = MAX_B;
-    assign_state(key, na, nb);
+    assign_state(key, na, nb, 'Llenar jarra B');
   }
 
   // A -> B
@@ -53,7 +53,7 @@ function create_state(a, b) {
       na = a - needs_to_fill;
       nb = b + needs_to_fill;
     }
-    assign_state(key, na, nb);
+    assign_state(key, na, nb, 'Pasar ' + needs_to_fill + ' de A a B');
   }
 
   // B -> A
@@ -66,34 +66,40 @@ function create_state(a, b) {
       na = a + needs_to_fill;
       nb = b - needs_to_fill;
     }
-    assign_state(key, na, nb);
+    assign_state(key, na, nb, 'Pasar ' + needs_to_fill + ' de B a A');
   }
 
   // Empty
   if (a > 0) {
     na = 0; 
     nb = b;
-    assign_state(key, na, nb);
+    assign_state(key, na, nb, 'Vaciar A');
   }
   if (b > 0) {
     na = a; 
     nb = 0;
-    assign_state(key, na, nb);
+    assign_state(key, na, nb, 'Vaciar B');
   }
 }
 
-function dfs(st) {
+function dfs(st, prev_state) {
   if (found) return;
   discovered[st] = st;
+  if (prev_state != '') {
+    discovered[st] = '[' + st + '] ' + states[prev_state][st]['msg'];
+  } else {
+    discovered[st] = '[' + st + '] Inicia con Jarra A: ' + st[0] + ' y Jarra B: ' + st[2];
+  }
+  prev_state = st;
   
   for (var key in states[st]) {
   	if (!(key in discovered)) {
   	  if (states[st][key][search_key] == search_val) {
-  	    discovered[key] = key;
+  	    discovered[key] = '[' + key + '] ' + states[st][key]['msg'];
   	    found = true;
   	    break;
       } else {
-      	dfs(key);
+      	dfs(key, prev_state);
       }
   	} 
   }
@@ -156,17 +162,17 @@ function show_solution() {
   var steps = []
   var item = {}
   for (var key in discovered) {
-    steps.push(key);
+    //alert(JSON.stringify(discovered[key], null, 4));
+    steps.push(discovered[key]);
   }
-
   show_step(steps);
 }
 
 function show_step(steps) {
   s = steps.shift();
   if (typeof s !== 'undefined') {
-  	update_log('A: ' + s[0] + ', B: ' + s[2]);
-  	update_jarras(s[0], s[2]);
+  	update_log(s);
+  	update_jarras(s[1], s[3]);
   	setTimeout(function() {
       show_step(steps);
     }, 1000);	
@@ -177,8 +183,8 @@ function show_step(steps) {
 
 create_state(0, 0);
 initialize_jarras();
+dfs('0-0', '');
 update_log ('Buscando ' + search_val + ' en jarra ' + search_key);
-dfs('0-0');
 show_solution();
 
 
