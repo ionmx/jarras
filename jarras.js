@@ -1,7 +1,7 @@
-var MAX_A      = 3;
-var MAX_B      = 5;
-var search_key = 'b';
-var search_val = 4;
+var MAX_A      = 0;
+var MAX_B      = 0;
+var search_key = '';
+var search_val = 0;
 var initial_state = '0-0';
 
 var states     = {};
@@ -25,6 +25,7 @@ function create_state(a, b) {
   var na = 0;
   var nb = 0;
   var needs_to_fill = 0;
+  var msg = '';
 
   if (!(key in states)) {
   	states[key] = {};
@@ -33,51 +34,55 @@ function create_state(a, b) {
   }
 
   // Fill 
-  if (a < MAX_A) {
-    na = MAX_A; 
-    nb = b;
+  if (+a < +MAX_A) {
+    na = +MAX_A; 
+    nb = +b;
     assign_state(key, na, nb, 'Llenar jarra A');
   }
-  if (b < MAX_B) {
-    na = a; 
-    nb = MAX_B;
+  if (+b < +MAX_B) {
+    na = +a; 
+    nb = +MAX_B;
     assign_state(key, na, nb, 'Llenar jarra B');
   }
 
   // A -> B
-  if (b < MAX_B && a > 0) {
-    needs_to_fill = MAX_B - b;
-    if (needs_to_fill > a) {
+  if (+b < +MAX_B && +a > 0) {
+    needs_to_fill = +MAX_B - +b;
+    if (needs_to_fill > +a) {
       na = 0;
-      nb = b + a;
+      nb = +b + +a;
+      msg = 'Vaciar los ' + a + ' de A a B';
     } else {
-      na = a - needs_to_fill;
-      nb = b + needs_to_fill;
+      na = +a - needs_to_fill;
+      nb = +b + needs_to_fill;
+      msg =  'Llenar B con ' + needs_to_fill + ' de A';
     }
-    assign_state(key, na, nb, 'Pasar ' + needs_to_fill + ' de A a B');
+    assign_state(key, na, nb, msg);
   }
 
   // B -> A
   if (a < MAX_A && b > 0) {
-    needs_to_fill = MAX_A - a;
-    if (needs_to_fill > b) {
-      na = a + b;
+    needs_to_fill = +MAX_A - +a;
+    if (needs_to_fill > +b) {
+      na = +a + +b;
       nb = 0;
+      msg = 'Vaciar los ' + b + ' de B a A';
     } else {
-      na = a + needs_to_fill;
-      nb = b - needs_to_fill;
+      na = +a + needs_to_fill;
+      nb = +b - needs_to_fill;
+      msg = 'Llenar A con ' + needs_to_fill + ' de B';
     }
-    assign_state(key, na, nb, 'Pasar ' + needs_to_fill + ' de B a A');
+    assign_state(key, na, nb, msg);
   }
 
   // Empty
-  if (a > 0) {
+  if (+a > 0) {
     na = 0; 
-    nb = b;
+    nb = +b;
     assign_state(key, na, nb, 'Vaciar A');
   }
-  if (b > 0) {
-    na = a; 
+  if (+b > 0) {
+    na = +a; 
     nb = 0;
     assign_state(key, na, nb, 'Vaciar B');
   }
@@ -121,17 +126,17 @@ function update_jarras(a, b) {
 
 function initialize_jarras() {
 
-  if (MAX_A > MAX_B) {
-    liter_height = jarra_max_height / MAX_A;
+  if (+MAX_A > +MAX_B) {
+    liter_height = jarra_max_height / +MAX_A;
   } else {
-    liter_height = jarra_max_height / MAX_B;
+    liter_height = jarra_max_height / +MAX_B;
   }
 
   // JARRA A
   var borde = document.getElementById("borde-a");
   var mango1 = document.getElementById("mango1-a");
   var mango2 = document.getElementById("mango2-a");
-  var jarra_height =  MAX_A * liter_height;
+  var jarra_height =  +MAX_A * liter_height;
   borde.setAttribute('height', jarra_height);
   borde.setAttribute('y', jarra_max_height - jarra_height);
   mango1.setAttribute('height',  jarra_height * 0.6);
@@ -144,7 +149,7 @@ function initialize_jarras() {
   var borde = document.getElementById("borde-b");
   var mango1 = document.getElementById("mango1-b");
   var mango2 = document.getElementById("mango2-b");
-  var jarra_height =  MAX_B * liter_height;
+  var jarra_height =  +MAX_B * liter_height;
   borde.setAttribute('height', jarra_height);
   borde.setAttribute('y', jarra_max_height - jarra_height);
   mango1.setAttribute('height',  jarra_height * 0.6);
@@ -163,26 +168,37 @@ function show_solution() {
   var steps = []
   var item = {}
   for (var key in discovered) {
-    //alert(JSON.stringify(discovered[key], null, 4));
-    steps.push(discovered[key]);
+    ab = key.split('-');
+    var i={'a':ab[0],'b':ab[1], 'msg': discovered[key]}
+
+    //steps.push(discovered[key]);
+    steps.push(i);
   }
+
   show_step(steps);
 }
 
 function show_step(steps) {
   s = steps.shift();
   if (typeof s !== 'undefined') {
-  	update_log(s);
-  	update_jarras(s[1], s[3]);
+  	update_log(s['msg']);
+  	update_jarras(s['a'], s['b']);
   	setTimeout(function() {
       show_step(steps);
-    }, 500);	
+    }, 1000);	
   } else {
-  	update_log('¡Encontrado!');
+    if (found) {
+    	update_log('¡Encontrado!');
+    } else {
+      update_log('No encontrado');
+    }
   }
 }
 
 function play() {
+  states = {};
+  discovered = {};
+  found = false;
   MAX_A = document.getElementById('A').value;
   MAX_B = document.getElementById('B').value;
   var sk = document.getElementById("search_key");
